@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: "pampukh"
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: "jdbc:h2:file:./database/db;INIT=RUNSCRIPT FROM 'classpath:sql/pampukh.sql'"
+    username: db
+    password: 12345
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update # not to mess with h2
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+        security.web.FilterChainProxy: DEBUG
+
+security:
+  auth:
+    header: Authorization
+    prefix: "Bearer "
+    login-uri: /pampukh/login
+  jwt:
+    secret: -@urHa9QA4AfxTV:cqczedY4#9tmj.4r!{.S/b#}Gv%]/jQidpCJud1P/m4C2Mq2F4P0S
+    type: JWT
+    issuer: pampukh
+    audience: pampukh-api
+    expiration-time: 604800000 # 1 week in milliseconds
+
