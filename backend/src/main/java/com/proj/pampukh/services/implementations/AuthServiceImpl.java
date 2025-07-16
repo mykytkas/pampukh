@@ -1,4 +1,4 @@
-package com.proj.pampukh.services;
+package com.proj.pampukh.services.implementations;
 
 import com.proj.pampukh.dto.user.UserLoginDto;
 import com.proj.pampukh.dto.user.UserRegisterDto;
@@ -7,6 +7,7 @@ import com.proj.pampukh.persistence.entity.AppUser;
 import com.proj.pampukh.persistence.entity.Password;
 import com.proj.pampukh.security.AuthUserDetails;
 import com.proj.pampukh.security.JwtUtil;
+import com.proj.pampukh.services.AuthService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-public class AuthServiceImpl {
+public class AuthServiceImpl implements AuthService {
 
   private final AppUserRepository userRepository;
   private final JwtUtil jwtUtil;
