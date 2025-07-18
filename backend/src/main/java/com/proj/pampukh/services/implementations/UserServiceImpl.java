@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
     checkPrincipal(username);
 
     File file = new File(pfp_path, username);
-    try (FileOutputStream stream = new FileOutputStream(file);){
+    try (FileOutputStream stream = new FileOutputStream(file)){
       stream.write(image.getBytes());
     } catch (IOException e) {
       throw new RuntimeException(e);

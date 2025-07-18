@@ -5,7 +5,6 @@ import com.proj.pampukh.dto.user.UserRegisterDto;
 import com.proj.pampukh.persistence.AppUserRepository;
 import com.proj.pampukh.persistence.entity.AppUser;
 import com.proj.pampukh.persistence.entity.Password;
-import com.proj.pampukh.security.AuthUserDetails;
 import com.proj.pampukh.security.JwtUtil;
 import com.proj.pampukh.services.AuthService;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,8 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 
 
 @Service
@@ -42,15 +39,15 @@ public class AuthServiceImpl implements AuthService {
   }
 
   public String login(UserLoginDto userDto) {
-
+    System.out.println(userDto);
     // TODO: move validation of data to separate validator class
-    if (userRepository.findAppUserByUsername(userDto.name()).isEmpty()) {
+    if (userRepository.findAppUserByUsername(userDto.username()).isEmpty()) {
       // TODO: define custom exceptions
       throw new RuntimeException("no such user to login");
     }
 
     Authentication authentication = buildAuthentication(
-        userDto.name(),
+        userDto.username(),
         userDto.password());
 
     return jwtUtil.generateAuthToken(authentication);
