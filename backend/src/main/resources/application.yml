@@ -35,3 +35,5 @@ security:
     audience: pampukh-api
     expiration-time: 604800000 # 1 week in milliseconds
 
+global:
+  pfp: res/pfp/
