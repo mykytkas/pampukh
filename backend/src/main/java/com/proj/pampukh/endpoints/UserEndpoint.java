@@ -1,5 +1,6 @@
 package com.proj.pampukh.endpoints;
 
+import com.proj.pampukh.dto.user.JwtResponse;
 import com.proj.pampukh.dto.user.UserUpdateDto;
 import com.proj.pampukh.services.UserService;
 import org.springframework.core.io.Resource;
@@ -26,8 +27,8 @@ public class UserEndpoint {
   }
 
   @PutMapping()
-  public ResponseEntity<String> updateUserInfo(@RequestBody UserUpdateDto userDto) {
-    return ResponseEntity.ok(userService.update(userDto));
+  public ResponseEntity<JwtResponse> updateUserInfo(@RequestBody UserUpdateDto userDto) {
+    return ResponseEntity.ok(new JwtResponse(userService.update(userDto)));
   }
 
   @DeleteMapping()

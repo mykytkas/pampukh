@@ -36,10 +36,9 @@ export class User implements OnInit{
     }
     this.authService.login(userData).subscribe({
       next: () => {
-        console.log("yuhuu")
+        // redirect to homepage?
       },
       error: err => {
-        console.log("nuhuu")
         console.error(err)
       }
     })

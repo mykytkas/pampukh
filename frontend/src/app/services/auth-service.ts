@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Global} from '../globals/global';
 import {UserAuth} from '../dto/userDto';
-import {Observable, tap} from 'rxjs';
+import {map, Observable, tap} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,8 @@ export class AuthService {
 
   register(userData: UserAuth): Observable<string>{
 
-    return this.httpClient.post<string>(`${this.backendUrl}/register`, userData)
+    return this.httpClient.post<{ token: string }>(`${this.backendUrl}/register`, userData)
+      .pipe(map(tokenJson => tokenJson.token))
       .pipe(tap({
         next: value => this.setToken(value)
       }));
@@ -31,8 +32,11 @@ export class AuthService {
 
   login(userData: UserAuth) {
     console.log(userData)
-    return this.httpClient.post<string>(`${this.backendUrl}/login`, userData).pipe(tap({
-      next: value => this.setToken(value)
+    return this.httpClient.post<{ token: string }>(`${this.backendUrl}/login`, userData)
+      .pipe(map(tokenJson => tokenJson.token))
+      .pipe(tap({
+      next: value => this.setToken(value),
+      error: err => console.log(err)
     }))
   }
 

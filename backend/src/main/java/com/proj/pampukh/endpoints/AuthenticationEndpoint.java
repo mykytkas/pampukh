@@ -1,5 +1,6 @@
 package com.proj.pampukh.endpoints;
 
+import com.proj.pampukh.dto.user.JwtResponse;
 import com.proj.pampukh.dto.user.UserLoginDto;
 import com.proj.pampukh.dto.user.UserRegisterDto;
 import com.proj.pampukh.services.AuthService;
@@ -20,12 +21,12 @@ public class AuthenticationEndpoint {
   }
 
   @PostMapping("/register")
-  public ResponseEntity<String> register(@RequestBody UserRegisterDto userRegisterDto) {
-    return ResponseEntity.ok(authService.register(userRegisterDto));
+  public ResponseEntity<JwtResponse> register(@RequestBody UserRegisterDto userRegisterDto) {
+    return ResponseEntity.ok(new JwtResponse(authService.register(userRegisterDto)));
   }
 
   @PostMapping("/login")
-  public ResponseEntity<String> login(@RequestBody UserLoginDto userLoginDto) {
-    return ResponseEntity.ok(authService.login(userLoginDto));
+  public ResponseEntity<JwtResponse> login(@RequestBody UserLoginDto userLoginDto) {
+    return ResponseEntity.ok(new JwtResponse(authService.login(userLoginDto)));
   }
 }
