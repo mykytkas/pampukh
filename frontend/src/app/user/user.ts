@@ -38,7 +38,10 @@ export class User implements OnInit{
       next: () => {
         console.log("yuhuu")
       },
-      error: err => console.error(err)
+      error: err => {
+        console.log("nuhuu")
+        console.error(err)
+      }
     })
   }
 
