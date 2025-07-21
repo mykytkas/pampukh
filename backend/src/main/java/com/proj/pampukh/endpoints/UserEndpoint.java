@@ -1,8 +1,10 @@
 package com.proj.pampukh.endpoints;
 
+import com.proj.pampukh.dto.library.LibraryDto;
 import com.proj.pampukh.dto.user.JwtResponse;
 import com.proj.pampukh.dto.user.UserUpdateDto;
 import com.proj.pampukh.services.UserService;
+import com.proj.pampukh.services.implementations.LibraryServiceImpl;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,9 +23,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserEndpoint {
 
   private final UserService userService;
+  private final LibraryServiceImpl libraryService;
 
-  public UserEndpoint(UserService userService) {
+  public UserEndpoint(UserService userService, LibraryServiceImpl libraryService) {
     this.userService = userService;
+    this.libraryService = libraryService;
   }
 
   @PutMapping()
@@ -54,6 +58,12 @@ public class UserEndpoint {
   public ResponseEntity<Void> removeProfilePicture(@PathVariable("username") String username) {
     userService.removePfp(username);
     return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/library")
+  public ResponseEntity<LibraryDto> createLibrary(@RequestBody LibraryDto toCreate) {
+    LibraryDto library = libraryService.create(toCreate);
+    return ResponseEntity.ok(library);
   }
 
 }
