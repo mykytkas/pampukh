@@ -41,4 +41,5 @@ security:
 
 global:
   pfp: res/pfp/
+  covers: res/covers/
   files: res/files/

@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,15 +29,17 @@ public class UserServiceImpl implements UserService {
   private final AuthenticationManager authenticationManager;
   private final JwtUtil jwtUtil;
   private final AppUserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
 
   @Value("${global.pfp}")
   private String pfp_path;
 
   //TODO: TESTING!!
-  public UserServiceImpl(AuthenticationManager authenticationManager, JwtUtil jwtUtil, AppUserRepository userRepository) {
+  public UserServiceImpl(AuthenticationManager authenticationManager, JwtUtil jwtUtil, AppUserRepository userRepository, PasswordEncoder passwordEncoder) {
     this.authenticationManager = authenticationManager;
     this.jwtUtil = jwtUtil;
     this.userRepository = userRepository;
+    this.passwordEncoder = passwordEncoder;
   }
 
   private void checkPrincipal(String givenUsername) {
@@ -54,7 +57,7 @@ public class UserServiceImpl implements UserService {
     AppUser updated = found.get();
     var newPass = new Password();
     newPass.setUser(updated);
-    newPass.setHash(userDto.password());
+    newPass.setHash(passwordEncoder.encode(userDto.password()));
     updated.setPassword(newPass);
 
     userRepository.save(updated);

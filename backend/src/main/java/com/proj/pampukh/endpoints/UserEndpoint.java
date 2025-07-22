@@ -4,6 +4,7 @@ import com.proj.pampukh.dto.user.JwtResponse;
 import com.proj.pampukh.dto.user.UserUpdateDto;
 import com.proj.pampukh.services.UserService;
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +38,7 @@ public class UserEndpoint {
     return ResponseEntity.ok().build();
   }
 
-  @PostMapping("/{username}/pfp")
+  @PostMapping(value = "/{username}/pfp", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
   public ResponseEntity<Void> setProfilePicture(
       @PathVariable("username") String username,
       @RequestPart("file") MultipartFile image) {
