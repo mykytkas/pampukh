@@ -6,13 +6,14 @@ import com.proj.pampukh.persistence.AppUserRepository;
 import com.proj.pampukh.persistence.LibraryRepository;
 import com.proj.pampukh.persistence.entity.AppUser;
 import com.proj.pampukh.persistence.entity.Library;
+import com.proj.pampukh.services.LibraryService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class LibraryServiceImpl {
+public class LibraryServiceImpl implements LibraryService {
 
 
   private final LibraryRepository libraryRepo;
