@@ -18,4 +18,6 @@ public class Fileref {
 
   String path;
 
+  String name;
+
 }
