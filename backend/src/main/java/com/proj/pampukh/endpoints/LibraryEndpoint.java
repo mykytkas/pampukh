@@ -1,5 +1,6 @@
 package com.proj.pampukh.endpoints;
 
+import com.proj.pampukh.dto.library.FileDataDto;
 import com.proj.pampukh.dto.library.LibraryDetailDto;
 import com.proj.pampukh.dto.library.LibraryDto;
 import com.proj.pampukh.services.LibraryService;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +31,7 @@ public class LibraryEndpoint {
   @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
   public ResponseEntity<LibraryDto> createLibrary(
       @RequestPart LibraryDto toCreate,
-      @RequestPart("file") MultipartFile cover) {
+      @RequestPart(value = "file", required = false) MultipartFile cover) {
     LibraryDto library = libraryService.create(toCreate, cover);
     return ResponseEntity.ok(library);
   }
@@ -37,7 +39,7 @@ public class LibraryEndpoint {
   @PutMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
   public ResponseEntity<LibraryDto> updateLibrary(
       @RequestPart LibraryDto toUpdate,
-      @RequestPart("file") MultipartFile cover) {
+      @RequestPart(value = "file", required = false) MultipartFile cover) {
     LibraryDto library = libraryService.update(toUpdate, cover);
     return ResponseEntity.ok(library);
   }
@@ -50,7 +52,7 @@ public class LibraryEndpoint {
   }
 
   @GetMapping("/{libraryName}")
-  public ResponseEntity<LibraryDetailDto> getLibrary (
+  public ResponseEntity<LibraryDetailDto> getLibrary(
       @PathVariable("libraryName") String libraryName
   ) {
     LibraryDetailDto library = libraryService.getLibraryData(libraryName);
@@ -58,10 +60,45 @@ public class LibraryEndpoint {
   }
 
   @GetMapping("/{libraryName}/cover")
-  public ResponseEntity<Resource> getLibraryCover (
-  @PathVariable("libraryName") String libraryName
+  public ResponseEntity<Resource> getLibraryCover(
+      @PathVariable("libraryName") String libraryName
   ) {
     Resource cover = libraryService.getLibraryCover(libraryName);
     return ResponseEntity.ok(cover);
+  }
+
+  @PostMapping(value = "/{libraryName}/files", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+  public ResponseEntity<FileDataDto> uploadFile(
+      @PathVariable("libraryName") String libraryName,
+      @RequestPart("data") FileDataDto fileDataDto,
+      @RequestPart("file") MultipartFile file
+  ) {
+    var addedFile = libraryService.addFile(libraryName, fileDataDto, file);
+    return ResponseEntity.ok(addedFile);
+  }
+
+  @DeleteMapping("/{libraryName}/files")
+  public ResponseEntity<Void> removeFile(
+    @PathVariable("libraryName") String libraryName,
+    @RequestParam String fileName
+  ) {
+    libraryService.removeFile(libraryName, fileName);
+    return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/{libraryName}/files")
+  public ResponseEntity<FileDataDto> getFileData(
+      @PathVariable("libraryName") String libraryName,
+      @RequestParam String fileName
+  ) {
+    return ResponseEntity.ok(libraryService.getFileData(libraryName, fileName));
+  }
+
+  @GetMapping("/{libraryName}/files/resource")
+  public ResponseEntity<Resource> getFileResource(
+      @PathVariable("libraryName") String libraryName,
+      @RequestParam String fileName
+  ) {
+    return ResponseEntity.ok(libraryService.getFileResource(libraryName, fileName));
   }
 }

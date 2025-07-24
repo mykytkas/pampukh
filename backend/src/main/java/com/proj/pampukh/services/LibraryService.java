@@ -1,5 +1,6 @@
 package com.proj.pampukh.services;
 
+import com.proj.pampukh.dto.library.FileDataDto;
 import com.proj.pampukh.dto.library.LibraryDetailDto;
 import com.proj.pampukh.dto.library.LibraryDto;
 import org.springframework.core.io.Resource;
@@ -16,4 +17,12 @@ public interface LibraryService {
   LibraryDetailDto getLibraryData(String libraryName);
 
   Resource getLibraryCover(String libraryName);
+
+  FileDataDto addFile(String libraryName, FileDataDto fileDto, MultipartFile file);
+
+  void removeFile(String libraryName, String fileName);
+
+  FileDataDto getFileData(String libraryName, String fileName);
+
+  Resource getFileResource(String libraryName, String fileName);
 }

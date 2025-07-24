@@ -1,11 +1,13 @@
 package com.proj.pampukh.services.implementations;
 
+import com.proj.pampukh.dto.library.FileDataDto;
 import com.proj.pampukh.dto.library.LibraryDetailDto;
 import com.proj.pampukh.dto.library.LibraryDto;
 import com.proj.pampukh.mappers.LibraryDtoMapper;
 import com.proj.pampukh.persistence.AppUserRepository;
 import com.proj.pampukh.persistence.LibraryRepository;
 import com.proj.pampukh.persistence.entity.AppUser;
+import com.proj.pampukh.persistence.entity.Fileref;
 import com.proj.pampukh.persistence.entity.Library;
 import com.proj.pampukh.services.LibraryService;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,27 +61,41 @@ public class LibraryServiceImpl implements LibraryService {
     library.setColor(libraryDto.color());
     library.setOwner(user);
 
+    //setup central storage for files
+    setupLibraryFolder(libraryDto);
+
     // cover file
     if (!libraryCover.isEmpty()) {
-      saveCover(library, libraryCover);
+      saveFile(coverFolder, libraryCover);
+      library.setCoverPath(libraryCover.getOriginalFilename());
     }
 
     libraryRepo.save(library);
     return mapper.mapToDto(library);
   }
 
-  private void saveCover(Library library, MultipartFile libraryCover) {
-    // cover file
-    String coverName = libraryCover.getOriginalFilename();
-    File file = new File(coverFolder, coverName);
+  // can and will break from special characters in library's name (both set and get)
+  //TODO: make implementation more robust or write validation
+  private void setupLibraryFolder(LibraryDto libraryDto) {
+    File folder = new File(fileFolder, libraryDto.name());
+    if (!folder.mkdir())
+      throw new RuntimeException(">>> can't create a folder for " + libraryDto.name());
+  }
 
-    try (FileOutputStream stream = new FileOutputStream(file)){
-      stream.write(libraryCover.getBytes());
-      library.setCoverPath(coverName);
+  private String getLibraryFolder(String libraryName) {
+    return fileFolder + "/" + libraryName;
+  }
+
+
+  private void saveFile(String folderName, MultipartFile toSave) {
+    File file = new File(folderName, toSave.getOriginalFilename());
+    try (FileOutputStream stream = new FileOutputStream(file)) {
+      stream.write(toSave.getBytes());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
+
 
   @Override
   public LibraryDto update(LibraryDto updateDto, MultipartFile updateCover) {
@@ -91,7 +107,8 @@ public class LibraryServiceImpl implements LibraryService {
     library.setColor(updateDto.color());
 
     if (!updateCover.isEmpty()) {
-      saveCover(library, updateCover);
+      saveFile(coverFolder, updateCover);
+      library.setCoverPath(updateCover.getOriginalFilename());
     }
 
     libraryRepo.save(library);
@@ -131,6 +148,56 @@ public class LibraryServiceImpl implements LibraryService {
     if (!cover.exists()) return null;//?? what is default behaviour??
 
     return new FileSystemResource(cover);
+  }
+
+  @Override
+  public FileDataDto addFile(String libraryName, FileDataDto fileDto, MultipartFile file) {
+    Library library = libraryRepo.findLibraryByName(libraryName);
+    if (library == null) throw new RuntimeException("ughghg");
+
+    Fileref fileref = new Fileref();
+    fileref.setName(fileDto.name());
+    fileref.setPath(file.getOriginalFilename());
+
+    if (file.isEmpty()) throw new RuntimeException("why?");
+    saveFile(getLibraryFolder(libraryName), file);
+
+    libraryRepo.save(library);
+    return new FileDataDto(fileDto.name());
+  }
+
+  @Override
+  public void removeFile(String libraryName, String fileName) {
+    Library library = libraryRepo.findLibraryByName(libraryName);
+    if (library == null) throw new RuntimeException("ughghg");
+
+    File cover = new File(getLibraryFolder(libraryName), fileName);
+    try {
+      Files.deleteIfExists(cover.toPath());
+    } catch (IOException e){
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public FileDataDto getFileData(String libraryName, String fileName) {
+    Library library = libraryRepo.findLibraryByName(libraryName);
+    if (library == null) throw new RuntimeException("ughghg");
+
+    // ugly af
+    return new FileDataDto(
+        library.getFilerefs().stream()
+            .filter(
+                fileref -> fileref.getName().equals(fileName))
+            .findFirst().map(Fileref::getName).orElseThrow()
+    );
+  }
+
+  @Override
+  public Resource getFileResource(String libraryName, String fileName) {
+    File file = new File(getLibraryFolder(libraryName), fileName);
+    if (!file.exists()) throw new RuntimeException("library " + libraryName + "does not have file " + fileName);
+    return new FileSystemResource(file);
   }
 
 
