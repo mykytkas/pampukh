@@ -55,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
 
   public String register(UserRegisterDto userDto) {
     AppUser user = new AppUser();
-    user.setUsername(userDto.name());
+    user.setUsername(userDto.username());
 
     Password password = new Password();
     password.setHash(passwordEncoder.encode(userDto.password()));
@@ -65,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
     userRepository.save(user);
 
     Authentication authentication = buildAuthentication(
-        userDto.name(), userDto.password());
+        userDto.username(), userDto.password());
 
     return jwtUtil.generateAuthToken(authentication);
   }

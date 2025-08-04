@@ -1,0 +1,36 @@
+<div class="flex h-screen w-screen flex-col bg-linear-65 from-gray-100 to-gray-800 gap-10 p-10 justify-center items-center">
+
+  <div class="bg-blue-200 p-3 mb-4">
+    <h2 class="text-green">login!</h2>
+  </div>
+
+  <div class="place-self-center">
+    <form [formGroup]="loginForm" (ngSubmit)="login($event)"
+          class="flex flex-col flex-wrap">
+      <h3 class="text-gray-100">username</h3>
+      <input type="text" formControlName="username"
+             class="bg-gray-100 focus:outline-none px-2 py-1">
+
+      <br>
+
+      <h3 class="text-gray-100">password</h3>
+      <input type="password" formControlName="password"
+             class="bg-gray-100 focus:outline-none px-2 py-1">
+
+      <br>
+
+      <button type="submit"
+              class="text-gray-100 bg-green-500 hover:bg-green-600 py-2 px-3 rounded mt-2 place-self-end">submit</button>
+
+    </form>
+  </div>
+
+  <div>
+    <button class="text-gray-100 bg-green-500 hover:bg-green-600 py-2 px-3 rounded mt-2"
+            routerLink="/register">
+      register</button>
+  </div>
+
+
+</div>
+

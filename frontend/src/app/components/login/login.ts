@@ -1,21 +1,23 @@
 import {Component, OnInit} from '@angular/core';
+import {UserAuth} from '../../dto/userDto';
 import {ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
-import {AuthService} from '../services/auth-service';
-import {UserAuth} from '../dto/userDto';
+import {AuthService} from '../../services/auth-service';
+import {Router, RouterLink} from '@angular/router';
 
 @Component({
-  selector: 'app-user',
-  imports: [ReactiveFormsModule],
-  templateUrl: './user.html',
-  styleUrl: './user.css',
+  selector: 'app-login',
+  imports: [ReactiveFormsModule, RouterLink],
+  templateUrl: './login.html',
+  styleUrl: './login.css',
   standalone: true
 })
-export class User implements OnInit{
+export class Login implements OnInit{
 
   loginForm: UntypedFormGroup
 
   constructor(private formBuilder: UntypedFormBuilder,
-              private authService: AuthService) {
+              private authService: AuthService,
+              private router: Router) {
     this.loginForm = this.formBuilder.group({
       username: ["", [Validators.required]],
       password: ["", [Validators.required]],
@@ -36,14 +38,11 @@ export class User implements OnInit{
     }
     this.authService.login(userData).subscribe({
       next: () => {
-        // redirect to homepage?
+        this.router.navigate(['/user']);
       },
       error: err => {
         console.error(err)
       }
     })
   }
-
-
-
 }

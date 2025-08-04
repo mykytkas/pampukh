@@ -15,7 +15,6 @@ export class AuthService {
   }
 
   register(userData: UserAuth): Observable<string>{
-
     return this.httpClient.post<{ token: string }>(`${this.backendUrl}/register`, userData)
       .pipe(map(tokenJson => tokenJson.token))
       .pipe(tap({

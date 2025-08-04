@@ -74,7 +74,7 @@ public class LibraryServiceImpl implements LibraryService {
     return mapper.mapToDto(library);
   }
 
-  // can and will break from special characters in library's name (both set and get)
+  // can and will break from special characters in library's username (both set and get)
   //TODO: make implementation more robust or write validation
   private void setupLibraryFolder(LibraryDto libraryDto) {
     File folder = new File(fileFolder, libraryDto.name());
