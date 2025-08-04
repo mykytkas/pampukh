@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 import {ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../../services/auth-service';
 import {UserAuth} from '../../dto/userDto';
-import {provideRouter, Router, RouterLink} from '@angular/router';
-import {routes} from '../../app.routes';
+import {Router, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-register',

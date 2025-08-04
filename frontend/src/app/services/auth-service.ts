@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Global} from '../globals/global';
-import {UserAuth} from '../dto/userDto';
+import {UserAuth, UserDto} from '../dto/userDto';
 import {map, Observable, tap} from 'rxjs';
+import {jwtDecode, JwtPayload} from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -42,6 +43,18 @@ export class AuthService {
   isLoggedIn() {
     // ihatedoublenegation.jpg
     return !! localStorage.getItem("authToken")
+  }
+
+  getLoggedInUser():UserDto {
+    const token = this.getToken();
+    if (!token) {
+      console.error("problems with token");
+      return {username: ""};
+    }
+    const payload = jwtDecode(token);
+    return <UserDto>{
+      username: payload.sub,
+    };
   }
 
 
