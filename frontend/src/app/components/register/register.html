@@ -1,32 +1,24 @@
-<div class="flex h-screen w-screen flex-col place-items-center place-content-center bg-linear-50 from-cyan-400 to-cyan-600">
-  <div>
-    register text
+<div class="flex flex-col justify-center bg-black text-white font-sans min-h-screen p-4">
+  <!-- text -->
+  <div class="flex flex-col justify-center items-center mb-10">
+    <h2 class="text-2xl font-bold">Register a new account</h2>
+    <p class="text-sm font-light">just basic credentials) we don't need much here</p>
   </div>
-
-  <div>
-    <form [formGroup]="formGroup" (ngSubmit)="register($event)">
-      <h3 class="text-gray-100">username</h3>
+  <!-- form -->
+  <div class="flex flex-col justify-center items-center">
+    <form [formGroup]="formGroup" (ngSubmit)="register($event)"
+          class="flex flex-col flex-wrap">
+      <h3 class="text-xl text-gray-100">username</h3>
       <input type="text" formControlName="username"
-             class="bg-gray-100 focus:outline-none px-2 py-1">
+             class="bg-neutral-800 rounded outline-2 outline-black hover:outline-teal-500 focus:outline-black duration-200 px-2 py-1">
 
-      <br>
-
-      <h3 class="text-gray-100">password</h3>
+      <h3 class="text-xl text-gray-100">password</h3>
       <input type="password" formControlName="password"
-             class="bg-gray-100 focus:outline-none px-2 py-1">
+             class="bg-neutral-800 rounded outline-2 outline-black hover:outline-teal-500 focus:outline-black duration-200 px-2 py-1">
 
-      <br>
-
-      <button type="submit"
-              class="text-gray-100 bg-green-400 hover:bg-green-600 py-2 px-3 rounded mt-2 place-self-end">submit</button>
-
+      <button type="submit" class="text-neutral-100 font-bold bg-neutral-700 outline-2 outline-black hover:bg-neutral-100 hover:text-neutral-700 hover:outline-2 hover:outline-teal-500 duration-200 py-2 px-3 rounded mt-10">register</button>
+      <button type="button" class="text-neutral-100 font-bold bg-neutral-700 outline-2 outline-black hover:bg-neutral-100 hover:text-neutral-700 hover:outline-2 hover:outline-teal-500 duration-200 py-2 px-3 rounded mt-5" routerLink="/login">back to login</button>
     </form>
-  </div>
-
-  <div>
-    <button class="text-gray-200 bg-teal-400 hover:bg-lime-600 py-2 px-3 rounded mt-2"
-            routerLink="/login">
-      back to login</button>
   </div>
 
 </div>
