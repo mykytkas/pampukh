@@ -1,6 +1,7 @@
 package com.proj.pampukh.services.implementations;
 
 import com.proj.pampukh.dto.library.FileDataDto;
+import com.proj.pampukh.dto.library.LibraryCreateDto;
 import com.proj.pampukh.dto.library.LibraryDetailDto;
 import com.proj.pampukh.dto.library.LibraryDto;
 import com.proj.pampukh.mappers.LibraryDtoMapper;
@@ -56,7 +57,7 @@ public class LibraryServiceImpl implements LibraryService {
     return user.get();
   }
 
-  public LibraryDto create(LibraryDto libraryDto, MultipartFile libraryCover) {
+  public LibraryDto create(LibraryCreateDto libraryDto, MultipartFile libraryCover) {
     AppUser user = principal();
     // Entity
     Library library = new Library();
@@ -64,29 +65,30 @@ public class LibraryServiceImpl implements LibraryService {
     library.setColor(libraryDto.color());
     library.setOwner(user);
 
-    //setup central storage for files
-    setupLibraryFolder(libraryDto);
-
     // cover file
     if (!libraryCover.isEmpty()) {
       saveFile(coverFolder, libraryCover);
       library.setCoverPath(libraryCover.getOriginalFilename());
     }
 
-    libraryRepo.save(library);
+    library = libraryRepo.save(library);
+
+    //setup central storage for files
+    setupLibraryFolder(library.getId());
+
     return mapper.mapToDto(library);
   }
 
   // can and will break from special characters in library's username (both set and get)
   //TODO: make implementation more robust or write validation
-  private void setupLibraryFolder(LibraryDto libraryDto) {
-    File folder = new File(fileFolder, libraryDto.name());
+  private void setupLibraryFolder(Long libraryId) {
+    File folder = new File(fileFolder, libraryId.toString());
     if (!folder.mkdir())
-      throw new RuntimeException(">>> can't create a folder for " + libraryDto.name());
+      throw new RuntimeException(">>> can't create a folder for " + libraryId);
   }
 
-  private String getLibraryFolder(String libraryName) {
-    return fileFolder + "/" + libraryName;
+  private String getLibraryFolder(Long libraryId) {
+    return fileFolder + "/" + libraryId;
   }
 
 
@@ -119,14 +121,14 @@ public class LibraryServiceImpl implements LibraryService {
   }
 
   @Override
-  public void delete(String libraryName) {
-    Library library = libraryRepo.findLibraryByName(libraryName);
-    if (library == null) {
-      throw  new RuntimeException("i want to write custom extensions, but im so lazy");
+  public void delete(Long libraryId) {
+    Optional<Library> library = libraryRepo.findById(libraryId);
+    if (library.isEmpty()) {
+      throw new RuntimeException("i want to write custom extensions, but im so lazy");
     }
-    libraryRepo.delete(library);
+    libraryRepo.delete(library.get());
 
-    File cover = new File(coverFolder, library.getCoverPath());
+    File cover = new File(coverFolder, library.get().getCoverPath());
     try {
       Files.deleteIfExists(cover.toPath());
     } catch (IOException e){
@@ -141,18 +143,18 @@ public class LibraryServiceImpl implements LibraryService {
     libraries = libraryRepo.findLibrariesByOwner(principal())
         .stream()
         .map(
-            entity -> new LibraryDto(entity.getName(), entity.getColor())
+            entity -> new LibraryDto(entity.getId(), entity.getName(), entity.getColor())
         ).toList();
 
     return libraries;
   }
 
   @Override
-  public LibraryDetailDto getLibraryData(String libraryName) {
-    Library library = libraryRepo.findLibraryByName(libraryName);
-    if (library == null) throw new RuntimeException("ughghg");
+  public LibraryDetailDto getLibraryData(Long libraryId) {
+    Optional<Library> library = libraryRepo.findById(libraryId);
+    if (library.isEmpty()) throw new RuntimeException("ughghg");
 
-    return mapper.mapToDetailDto(library);
+    return mapper.mapToDetailDto(library.get());
   }
 
   @Override
@@ -168,38 +170,38 @@ public class LibraryServiceImpl implements LibraryService {
   }
 
   @Override
-  public Resource getLibraryCover(String libraryName) {
-    Library library = libraryRepo.findLibraryByName(libraryName);
-    if (library == null) throw new RuntimeException("ughghg");
+  public Resource getLibraryCover(Long libraryId) {
+    Optional<Library> library = libraryRepo.findById(libraryId);
+    if (library.isEmpty()) throw new RuntimeException("ughghg");
 
-    File cover = new File(coverFolder, library.getCoverPath());
+    File cover = new File(coverFolder, library.get().getCoverPath());
     if (!cover.exists()) return null;//?? what is default behaviour??
 
     return new FileSystemResource(cover);
   }
 
   @Override
-  public FileDataDto addFile(String libraryName, FileDataDto fileDto, MultipartFile file) {
-    Library library = libraryRepo.findLibraryByName(libraryName);
-    if (library == null) throw new RuntimeException("ughghg");
+  public FileDataDto addFile(Long libraryId, FileDataDto fileDto, MultipartFile file) {
+    Optional<Library> library = libraryRepo.findById(libraryId);
+    if (library.isEmpty()) throw new RuntimeException("ughghg");
 
     Fileref fileref = new Fileref();
     fileref.setName(fileDto.name());
     fileref.setPath(file.getOriginalFilename());
 
     if (file.isEmpty()) throw new RuntimeException("why?");
-    saveFile(getLibraryFolder(libraryName), file);
+    saveFile(getLibraryFolder(libraryId), file);
 
-    libraryRepo.save(library);
+    libraryRepo.save(library.get());
     return new FileDataDto(fileDto.name());
   }
 
   @Override
-  public void removeFile(String libraryName, String fileName) {
-    Library library = libraryRepo.findLibraryByName(libraryName);
-    if (library == null) throw new RuntimeException("ughghg");
+  public void removeFile(Long libraryId, String fileName) {
+    Optional<Library> library = libraryRepo.findById(libraryId);
+    if (library.isEmpty()) throw new RuntimeException("ughghg");
 
-    File cover = new File(getLibraryFolder(libraryName), fileName);
+    File cover = new File(getLibraryFolder(libraryId), fileName);
     try {
       Files.deleteIfExists(cover.toPath());
     } catch (IOException e){
@@ -208,13 +210,13 @@ public class LibraryServiceImpl implements LibraryService {
   }
 
   @Override
-  public FileDataDto getFileData(String libraryName, String fileName) {
-    Library library = libraryRepo.findLibraryByName(libraryName);
-    if (library == null) throw new RuntimeException("ughghg");
+  public FileDataDto getFileData(Long libraryId, String fileName) {
+    Optional<Library> library = libraryRepo.findById(libraryId);
+    if (library.isEmpty()) throw new RuntimeException("ughghg");
 
     // ugly af
     return new FileDataDto(
-        library.getFilerefs().stream()
+        library.get().getFilerefs().stream()
             .filter(
                 fileref -> fileref.getName().equals(fileName))
             .findFirst().map(Fileref::getName).orElseThrow()
@@ -222,9 +224,9 @@ public class LibraryServiceImpl implements LibraryService {
   }
 
   @Override
-  public Resource getFileResource(String libraryName, String fileName) {
-    File file = new File(getLibraryFolder(libraryName), fileName);
-    if (!file.exists()) throw new RuntimeException("library " + libraryName + "does not have file " + fileName);
+  public Resource getFileResource(Long libraryId, String fileName) {
+    File file = new File(getLibraryFolder(libraryId), fileName);
+    if (!file.exists()) throw new RuntimeException("library " + libraryId + "does not have file " + fileName);
     return new FileSystemResource(file);
   }
 

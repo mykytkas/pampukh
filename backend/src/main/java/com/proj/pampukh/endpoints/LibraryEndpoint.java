@@ -1,6 +1,7 @@
 package com.proj.pampukh.endpoints;
 
 import com.proj.pampukh.dto.library.FileDataDto;
+import com.proj.pampukh.dto.library.LibraryCreateDto;
 import com.proj.pampukh.dto.library.LibraryDetailDto;
 import com.proj.pampukh.dto.library.LibraryDto;
 import com.proj.pampukh.services.LibraryService;
@@ -35,14 +36,9 @@ public class LibraryEndpoint {
     return ResponseEntity.ok(libraryService.getLibraryList());
   }
 
-  @GetMapping("/covers")
-  public ResponseEntity<List<Resource>> getAllLibraryCovers() {
-    return ResponseEntity.ok(libraryService.getAllLibraryCovers());
-  }
-
   @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
   public ResponseEntity<LibraryDto> createLibrary(
-      @RequestPart LibraryDto toCreate,
+      @RequestPart LibraryCreateDto toCreate,
       @RequestPart(value = "file", required = false) MultipartFile cover) {
     LibraryDto library = libraryService.create(toCreate, cover);
     return ResponseEntity.ok(library);
@@ -56,61 +52,61 @@ public class LibraryEndpoint {
     return ResponseEntity.ok(library);
   }
 
-  @DeleteMapping("/{libraryName}")
+  @DeleteMapping("/{libraryId}")
   public ResponseEntity<Void> deleteLibrary(
-      @PathVariable("libraryName") String libraryName) {
-    libraryService.delete(libraryName);
+      @PathVariable("libraryId") Long libraryId) {
+    libraryService.delete(libraryId);
     return ResponseEntity.ok().build();
   }
 
-  @GetMapping("/{libraryName}")
+  @GetMapping("/{libraryId}")
   public ResponseEntity<LibraryDetailDto> getLibrary(
-      @PathVariable("libraryName") String libraryName
+      @PathVariable("libraryId") Long libraryId
   ) {
-    LibraryDetailDto library = libraryService.getLibraryData(libraryName);
+    LibraryDetailDto library = libraryService.getLibraryData(libraryId);
     return ResponseEntity.ok(library);
   }
 
-  @GetMapping("/{libraryName}/cover")
+  @GetMapping("/{libraryId}/cover")
   public ResponseEntity<Resource> getLibraryCover(
-      @PathVariable("libraryName") String libraryName
+      @PathVariable("libraryId") Long libraryId
   ) {
-    Resource cover = libraryService.getLibraryCover(libraryName);
+    Resource cover = libraryService.getLibraryCover(libraryId);
     return ResponseEntity.ok(cover);
   }
 
-  @PostMapping(value = "/{libraryName}/files", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+  @PostMapping(value = "/{libraryId}/files", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
   public ResponseEntity<FileDataDto> uploadFile(
-      @PathVariable("libraryName") String libraryName,
+      @PathVariable("libraryId") Long libraryId,
       @RequestPart("data") FileDataDto fileDataDto,
       @RequestPart("file") MultipartFile file
   ) {
-    var addedFile = libraryService.addFile(libraryName, fileDataDto, file);
+    var addedFile = libraryService.addFile(libraryId, fileDataDto, file);
     return ResponseEntity.ok(addedFile);
   }
 
-  @DeleteMapping("/{libraryName}/files")
+  @DeleteMapping("/{libraryId}/files")
   public ResponseEntity<Void> removeFile(
-    @PathVariable("libraryName") String libraryName,
+    @PathVariable("libraryId") Long libraryId,
     @RequestParam String fileName
   ) {
-    libraryService.removeFile(libraryName, fileName);
+    libraryService.removeFile(libraryId, fileName);
     return ResponseEntity.ok().build();
   }
 
-  @GetMapping("/{libraryName}/files")
+  @GetMapping("/{libraryId}/files")
   public ResponseEntity<FileDataDto> getFileData(
-      @PathVariable("libraryName") String libraryName,
+      @PathVariable("libraryId") Long libraryId,
       @RequestParam String fileName
   ) {
-    return ResponseEntity.ok(libraryService.getFileData(libraryName, fileName));
+    return ResponseEntity.ok(libraryService.getFileData(libraryId, fileName));
   }
 
-  @GetMapping("/{libraryName}/files/resource")
+  @GetMapping("/{libraryId}/files/resource")
   public ResponseEntity<Resource> getFileResource(
-      @PathVariable("libraryName") String libraryName,
+      @PathVariable("libraryId") Long libraryId,
       @RequestParam String fileName
   ) {
-    return ResponseEntity.ok(libraryService.getFileResource(libraryName, fileName));
+    return ResponseEntity.ok(libraryService.getFileResource(libraryId, fileName));
   }
 }

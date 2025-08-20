@@ -1,6 +1,7 @@
 package com.proj.pampukh.services;
 
 import com.proj.pampukh.dto.library.FileDataDto;
+import com.proj.pampukh.dto.library.LibraryCreateDto;
 import com.proj.pampukh.dto.library.LibraryDetailDto;
 import com.proj.pampukh.dto.library.LibraryDto;
 import org.springframework.core.io.Resource;
@@ -10,25 +11,25 @@ import java.util.List;
 
 public interface LibraryService {
 
-  LibraryDto create(LibraryDto libraryDto, MultipartFile libraryCover);
+  LibraryDto create(LibraryCreateDto libraryDto, MultipartFile libraryCover);
 
   LibraryDto update(LibraryDto updateDto, MultipartFile updateCover);
 
-  void delete(String libraryName);
+  void delete(Long libraryId);
 
   List<LibraryDto> getLibraryList();
 
-  LibraryDetailDto getLibraryData(String libraryName);
+  LibraryDetailDto getLibraryData(Long libraryId);
 
   List<Resource> getAllLibraryCovers();
 
-  Resource getLibraryCover(String libraryName);
+  Resource getLibraryCover(Long libraryId);
 
-  FileDataDto addFile(String libraryName, FileDataDto fileDto, MultipartFile file);
+  FileDataDto addFile(Long libraryId, FileDataDto fileDto, MultipartFile file);
 
-  void removeFile(String libraryName, String fileName);
+  void removeFile(Long libraryId, String fileName);
 
-  FileDataDto getFileData(String libraryName, String fileName);
+  FileDataDto getFileData(Long libraryId, String fileName);
 
-  Resource getFileResource(String libraryName, String fileName);
+  Resource getFileResource(Long libraryId, String fileName);
 }

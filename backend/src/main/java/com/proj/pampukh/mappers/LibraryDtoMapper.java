@@ -10,11 +10,16 @@ import org.springframework.stereotype.Component;
 public class LibraryDtoMapper {
 
   public LibraryDto mapToDto(Library library) {
-    return new LibraryDto(library.getName(), library.getColor());
+    return new LibraryDto(
+        library.getId(),
+        library.getName(),
+        library.getColor()
+    );
   }
 
   public LibraryDetailDto mapToDetailDto(Library library) {
     return new LibraryDetailDto(
+        library.getId(),
         library.getName(),
         library.getColor(),
         library.getFilerefs().stream().map(Fileref::getName).toList()
