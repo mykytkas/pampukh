@@ -6,6 +6,8 @@ import com.proj.pampukh.dto.library.LibraryDto;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface LibraryService {
 
   LibraryDto create(LibraryDto libraryDto, MultipartFile libraryCover);
@@ -14,7 +16,11 @@ public interface LibraryService {
 
   void delete(String libraryName);
 
+  List<LibraryDto> getLibraryList();
+
   LibraryDetailDto getLibraryData(String libraryName);
+
+  List<Resource> getAllLibraryCovers();
 
   Resource getLibraryCover(String libraryName);
 

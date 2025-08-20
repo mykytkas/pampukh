@@ -21,7 +21,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class LibraryServiceImpl implements LibraryService {
@@ -132,11 +135,36 @@ public class LibraryServiceImpl implements LibraryService {
   }
 
   @Override
+  public List<LibraryDto> getLibraryList() {
+    List<LibraryDto> libraries;
+
+    libraries = libraryRepo.findLibrariesByOwner(principal())
+        .stream()
+        .map(
+            entity -> new LibraryDto(entity.getName(), entity.getColor())
+        ).toList();
+
+    return libraries;
+  }
+
+  @Override
   public LibraryDetailDto getLibraryData(String libraryName) {
     Library library = libraryRepo.findLibraryByName(libraryName);
     if (library == null) throw new RuntimeException("ughghg");
 
     return mapper.mapToDetailDto(library);
+  }
+
+  @Override
+  public List<Resource> getAllLibraryCovers() {
+    List<Library> libraries = libraryRepo.findLibrariesByOwner(principal());
+    List<Resource> resources = new ArrayList<>();
+    libraries
+        .forEach(lib
+            -> resources.add(new FileSystemResource(
+            new File(coverFolder, lib.getCoverPath())))
+        );
+    return resources;
   }
 
   @Override

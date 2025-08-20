@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/pampukh/library")
 public class LibraryEndpoint {
@@ -26,6 +28,16 @@ public class LibraryEndpoint {
 
   public LibraryEndpoint(LibraryService libraryService) {
     this.libraryService = libraryService;
+  }
+
+  @GetMapping()
+  public ResponseEntity<List<LibraryDto>> getAllLibraries() {
+    return ResponseEntity.ok(libraryService.getLibraryList());
+  }
+
+  @GetMapping("/covers")
+  public ResponseEntity<List<Resource>> getAllLibraryCovers() {
+    return ResponseEntity.ok(libraryService.getAllLibraryCovers());
   }
 
   @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
